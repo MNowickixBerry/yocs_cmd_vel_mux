@@ -16,6 +16,7 @@
 
 #include "yocs_cmd_vel_mux/cmd_vel_mux_nodelet.hpp"
 #include "yocs_cmd_vel_mux/exceptions.hpp"
+#define HAVE_NEW_YAMLCPP
 /*****************************************************************************
 ** Namespaces
 *****************************************************************************/
@@ -53,11 +54,15 @@ void CmdVelMuxNodelet::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg,
       acv_msg->data = cmd_vel_subs[idx]->name;
       if(active_subscriber) {
         active_subscriber->publish(acv_msg);
+      } else {
+        ROS_WARN("cmd_vel_mux triggered race condition, but we fixed it :)");
       }
     }
 
     if(output_topic_pub) {
       output_topic_pub->publish(msg);
+    } else {
+      ROS_WARN("cmd_vel_mux triggered race condition, but we fixed it :)");
     }
   }
 }
@@ -83,6 +88,8 @@ void CmdVelMuxNodelet::timerCallback(const ros::TimerEvent& event, unsigned int 
     acv_msg->data = "idle";
     if(active_subscriber) {
       active_subscriber->publish(acv_msg);
+    } else {
+      ROS_WARN("cmd_vel_mux triggered race condition, but we fixed it :)");
     }
   }
 
@@ -108,6 +115,8 @@ void CmdVelMuxNodelet::onInit()
   active_msg->data = "idle";
   if(active_subscriber) {
     active_subscriber->publish(active_msg);
+  } else {
+    ROS_WARN("cmd_vel_mux triggered race condition, but we fixed it :)");
   }
 
   // could use a call to reloadConfiguration here, but it seems to automatically call it once with defaults anyway.
