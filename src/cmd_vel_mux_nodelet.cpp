@@ -52,10 +52,18 @@ void CmdVelMuxNodelet::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg,
       // Notify the world that a new cmd_vel source took the control
       std_msgs::StringPtr acv_msg(new std_msgs::String);
       acv_msg->data = cmd_vel_subs[idx]->name;
-      active_subscriber.publish(acv_msg);
+      if(active_subscriber) {
+        active_subscriber->publish(acv_msg);
+      } else {
+        ROS_WARN("cmd_vel_mux triggered race condition, but we fixed it :)");
+      }
     }
 
-    output_topic_pub.publish(msg);
+    if(output_topic_pub) {
+      output_topic_pub->publish(msg);
+    } else {
+      ROS_WARN("cmd_vel_mux triggered race condition, but we fixed it :)");
+    }
   }
 }
 
@@ -78,7 +86,11 @@ void CmdVelMuxNodelet::timerCallback(const ros::TimerEvent& event, unsigned int 
     // ...notify the world that nobody is publishing on cmd_vel; its vacant
     std_msgs::StringPtr acv_msg(new std_msgs::String);
     acv_msg->data = "idle";
-    active_subscriber.publish(acv_msg);
+    if(active_subscriber) {
+      active_subscriber->publish(acv_msg);
+    } else {
+      ROS_WARN("cmd_vel_mux triggered race condition, but we fixed it :)");
+    }
   }
 
   if (idx != GLOBAL_TIMER)
@@ -101,7 +113,11 @@ void CmdVelMuxNodelet::onInit()
   // Notify the world that by now nobody is publishing on cmd_vel yet
   std_msgs::StringPtr active_msg(new std_msgs::String);
   active_msg->data = "idle";
-  active_subscriber.publish(active_msg);
+  if(active_subscriber) {
+    active_subscriber->publish(active_msg);
+  } else {
+    ROS_WARN("cmd_vel_mux triggered race condition, but we fixed it :)");
+  }
 
   // could use a call to reloadConfiguration here, but it seems to automatically call it once with defaults anyway.
   NODELET_DEBUG("CmdVelMux : successfully initialized");
