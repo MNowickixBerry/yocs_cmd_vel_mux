@@ -16,7 +16,7 @@
 
 #include "yocs_cmd_vel_mux/cmd_vel_mux_nodelet.hpp"
 #include "yocs_cmd_vel_mux/exceptions.hpp"
-#define HAVE_NEW_YAMLCPP
+
 /*****************************************************************************
 ** Namespaces
 *****************************************************************************/
